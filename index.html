@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <title>Vardiya Takvimi</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --primary-bg: #f4f6f9;
+            --card-bg: #ffffff;
+            
+            /* Vardiya Renkleri */
+            --v1-color: #2c3e50; --v1-bg: #eceff1;
+            --v2-color: #f57f17; --v2-bg: #fff3e0;
+            --v3-color: #c62828; --v3-bg: #ffebee;
+            --tatil-color: #7b1fa2; --tatil-bg: #f3e5f5;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--primary-bg);
+            padding-bottom: 50px;
+        }
+        
+        .main-card {
+            border: none; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            overflow: hidden; background: var(--card-bg);
+        }
+
+        .header-area {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            padding: 20px; color: white; text-align: center;
+        }
+
+        /* --- MENÜ SEKMELERİ DÜZENİ (DÜZELTİLDİ) --- */
+        .nav-pills {
+            flex-wrap: nowrap !important; /* Asla alt satıra geçme */
+            overflow-x: auto; /* Gerekirse kaydır (ama sığdıracağız) */
+            gap: 5px; /* Butonlar arası boşluk */
+        }
+        
+        .nav-link {
+            white-space: nowrap; /* Metin alt satıra geçmesin */
+            padding: 10px 5px !important; /* Yan boşlukları kıstık */
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- SİMETRİK SEÇİM KUTULARI --- */
+        .shift-selector { display: none; }
+        .shift-option {
+            border: 2px solid #e0e0e0; border-radius: 12px; padding: 10px;
+            text-align: center; cursor: pointer; transition: all 0.2s; background: #fff;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; min-height: 110px;
+        }
+        .shift-option i { font-size: 2rem; margin-bottom: 8px; display: block; line-height: 1; }
+        .shift-option div { font-weight: 700; font-size: 0.95rem; margin-bottom: 2px; }
+        .shift-option small { font-size: 0.75rem; color: #777; font-weight: 500; }
+
+        .shift-selector:checked + .shift-option.opt-v1 { border-color: var(--v1-color); background-color: var(--v1-bg); color: var(--v1-color); }
+        .shift-selector:checked + .shift-option.opt-v2 { border-color: var(--v2-color); background-color: var(--v2-bg); color: var(--v2-color); }
+        .shift-selector:checked + .shift-option.opt-v3 { border-color: var(--v3-color); background-color: var(--v3-bg); color: var(--v3-color); }
+
+        /* --- TAKVİM TASARIMI --- */
+        .calendar-wrapper { padding: 10px; background: #fff; border-radius: 10px; border: 1px solid #eee; margin-bottom: 20px; }
+        .calendar-header { text-align: center; font-weight: 800; font-size: 1.1rem; margin-bottom: 10px; color: #333; text-transform: uppercase; }
+        
+        .calendar-table { width: 100%; border-collapse: separate; border-spacing: 2px; }
+        .calendar-table th { text-align: center; font-size: 0.75rem; color: #888; padding-bottom: 5px; }
+        .calendar-table td {
+            height: 60px; vertical-align: top; border: 1px solid #f0f0f0; border-radius: 6px; width: 14.28%; background: #fff;
+        }
+        .cal-cell-inner { height: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 2px; }
+        .day-num { font-weight: 700; font-size: 0.85rem; color: #444; }
+        .cal-badge { 
+            font-size: 0.6rem; font-weight: 800; padding: 2px; border-radius: 4px; width: 100%; text-align: center;
+            display: flex; justify-content: center; align-items: center; gap: 2px;
+        }
+        .today-border { border: 2px solid #0d47a1 !important; }
+        
+        /* Renkler */
+        .c-v1 { background: var(--v1-bg); color: var(--v1-color); }
+        .c-v2 { background: var(--v2-bg); color: var(--v2-color); }
+        .c-v3 { background: var(--v3-bg); color: var(--v3-color); }
+        .c-tatil { background: var(--tatil-bg); color: var(--tatil-color); }
+
+        /* --- GÜN SORGULA KARTI --- */
+        .big-result-card {
+            background: white; border-radius: 16px; padding: 30px; text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-top: 10px solid #ccc; margin-top: 20px;
+        }
+        .big-date { font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; color: #333; }
+        .big-dayname { font-size: 1.1rem; color: #666; margin-bottom: 20px; }
+        .big-icon { font-size: 4rem; margin-bottom: 15px; }
+        .big-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 5px; }
+        .big-time { font-size: 1rem; background: #eee; display: inline-block; padding: 5px 15px; border-radius: 20px; }
+
+        /* MOBİL İÇİN ÖZEL AYARLAR */
+        @media (max-width: 576px) {
+            .nav-link {
+                font-size: 0.75rem; /* Yazıyı küçült */
+                padding: 8px 4px !important;
+            }
+            .nav-link i {
+                font-size: 0.9rem; /* İkonu küçült */
+                margin-right: 3px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-3">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="main-card">
+                
+                <div class="header-area">
+                    <h4 class="m-0 fw-bold"><i class="bi bi-calendar-range me-2"></i>Vardiya Takvimi</h4>
+                </div>
+
+                <div class="card-body p-3 p-md-4">
+                    
+                    <div class="bg-light p-3 rounded-3 mb-4 border">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted text-uppercase mb-1">Bugünün Tarihini Seç</label>
+                                <input type="date" class="form-control" id="baslangic_tarihi">
+                            </div>
+                            <div class="col-6">
+                                <label class="small fw-bold text-muted text-uppercase mb-1">Tatil Günü</label>
+                                <select class="form-select" id="tatil_gunu">
+                                    <option value="1">Pazartesi</option>
+                                    <option value="2">Salı</option>
+                                    <option value="3">Çarşamba</option>
+                                    <option value="4">Perşembe</option>
+                                    <option value="5">Cuma</option>
+                                    <option value="6">Cumartesi</option>
+                                    <option value="0" selected>Pazar</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <label class="small fw-bold text-muted text-uppercase mb-2">Şuanki Vardiyanı Seç</label>
+                                <div class="row g-2">
+                                    <div class="col-4">
+                                        <input type="radio" name="startVardiya" id="sv1" value="1" class="shift-selector" checked>
+                                        <label for="sv1" class="shift-option opt-v1">
+                                            <i class="bi bi-moon-stars-fill"></i><div>Gece</div><small>24/08</small>
+                                        </label>
+                                    </div>
+                                    <div class="col-4">
+                                        <input type="radio" name="startVardiya" id="sv2" value="2" class="shift-selector">
+                                        <label for="sv2" class="shift-option opt-v2">
+                                            <i class="bi bi-brightness-high-fill"></i><div>Gündüz</div><small>08/16</small>
+                                        </label>
+                                    </div>
+                                    <div class="col-4">
+                                        <input type="radio" name="startVardiya" id="sv3" value="3" class="shift-selector">
+                                        <label for="sv3" class="shift-option opt-v3">
+                                            <i class="bi bi-lock-fill"></i><div>Kilit</div><small>16/24</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ul class="nav nav-pills nav-fill mb-4" id="pills-tab" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active fw-bold" id="pills-query-tab" data-bs-toggle="pill" data-bs-target="#pills-query">
+                                <i class="bi bi-search me-1"></i>Gün Sorgula
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link fw-bold" id="pills-calendar-tab" data-bs-toggle="pill" data-bs-target="#pills-calendar">
+                                <i class="bi bi-grid-3x3 me-1"></i>Aylık
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link fw-bold" id="pills-range-tab" data-bs-toggle="pill" data-bs-target="#pills-range">
+                                <i class="bi bi-calendar-week me-1"></i>Tarih Aralığı
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        
+                        <div class="tab-pane fade show active" id="pills-query">
+                            <div class="input-group mb-3">
+                                <input type="date" id="query_date" class="form-control form-control-lg">
+                                <button class="btn btn-primary btn-lg" onclick="checkSingleDay()">BUL</button>
+                            </div>
+                            <div id="query-result-area" style="display:none;"></div>
+                        </div>
+
+                        <div class="tab-pane fade" id="pills-calendar">
+                            <div class="d-flex gap-2 mb-3">
+                                <input type="month" id="takvim_ay" class="form-control">
+                                <button class="btn btn-primary px-4" onclick="renderSingleCalendar()"><i class="bi bi-arrow-clockwise"></i></button>
+                            </div>
+                            
+                            <div id="export-single-calendar-area">
+                                <div id="single-calendar-container"></div>
+                            </div>
+
+                            <button class="btn btn-dark w-100 mt-3 btn-sm py-2" onclick="exportPDF('export-single-calendar-area', 'Aylik_Takvim')">
+                                <i class="bi bi-download me-2"></i>PDF İndir
+                            </button>
+                        </div>
+
+                        <div class="tab-pane fade" id="pills-range">
+                            <div class="row g-2 mb-3">
+                                <div class="col-5">
+                                    <label class="small text-muted">Başlangıç</label>
+                                    <input type="date" id="range_start" class="form-control">
+                                </div>
+                                <div class="col-5">
+                                    <label class="small text-muted">Bitiş</label>
+                                    <input type="date" id="range_end" class="form-control">
+                                </div>
+                                <div class="col-2 d-flex align-items-end">
+                                    <button class="btn btn-primary w-100" onclick="renderRangeCalendars()"><i class="bi bi-search"></i></button>
+                                </div>
+                            </div>
+
+                            <div id="export-range-area" class="p-1 bg-white">
+                                <div id="range-calendar-container"></div>
+                            </div>
+
+                            <button class="btn btn-dark w-100 mt-3 btn-sm py-2" onclick="exportPDF('export-range-area', 'Vardiya_Aralik_Takvimi')">
+                                <i class="bi bi-download me-2"></i>PDF İndir
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="text-center text-muted mt-3 small">Ayarlar otomatik kaydedilir.</div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+    const gunler = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
+    const aylar = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+
+    const shiftData = {
+        1: { icon: "bi-moon-stars-fill", label: "Gece Vardiyası 24/08", short: "V1", color: "#2c3e50", bg: "#eceff1", cal: "c-v1" },
+        2: { icon: "bi-brightness-high-fill", label: "Gündüz Vardiyası 08/16", short: "V2", color: "#f57f17", bg: "#fff3e0", cal: "c-v2" },
+        3: { icon: "bi-lock-fill", label: "16/24 Vardiyası Kilit", short: "V3", color: "#c62828", bg: "#ffebee", cal: "c-v3" }
+    };
+
+    window.onload = function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('baslangic_tarihi').value = today;
+        document.getElementById('query_date').value = today;
+        document.getElementById('takvim_ay').value = today.slice(0, 7);
+        document.getElementById('range_start').value = today;
+        
+        const nextMonth = new Date();
+        nextMonth.setMonth(nextMonth.getMonth() + 2); // 2 ay sonrasını varsayılan yap
+        document.getElementById('range_end').value = nextMonth.toISOString().split('T')[0];
+
+        loadSettings();
+    };
+
+    function loadSettings() {
+        if(localStorage.getItem('my_vardiya')) document.querySelector(`input[name="startVardiya"][value="${localStorage.getItem('my_vardiya')}"]`).checked = true;
+        if(localStorage.getItem('my_tatil')) document.getElementById('tatil_gunu').value = localStorage.getItem('my_tatil');
+    }
+
+    function saveSettings() {
+        localStorage.setItem('my_vardiya', document.querySelector('input[name="startVardiya"]:checked').value);
+        localStorage.setItem('my_tatil', document.getElementById('tatil_gunu').value);
+    }
+
+    // --- HESAPLAMA MOTORU ---
+    function getShiftForDate(targetDateStr) {
+        const baslangicTarihi = new Date(document.getElementById('baslangic_tarihi').value);
+        const baslangicVardiya = parseInt(document.querySelector('input[name="startVardiya"]:checked').value);
+        const tatilGunu = parseInt(document.getElementById('tatil_gunu').value);
+        const hedefTarih = new Date(targetDateStr);
+
+        baslangicTarihi.setHours(12,0,0,0);
+        hedefTarih.setHours(12,0,0,0);
+
+        if (hedefTarih < baslangicTarihi) return { error: true };
+
+        const nextShift = { 1: 3, 2: 1, 3: 2 };
+        let currentVar = baslangicVardiya;
+        let pendingChange = false;
+        
+        let cursor = new Date(baslangicTarihi);
+        let safety = 0;
+        
+        while (cursor <= hedefTarih && safety < 5000) {
+            const dayOfWeek = cursor.getDay();
+            if (cursor.getTime() === hedefTarih.getTime()) {
+                if (dayOfWeek === tatilGunu) return { tatil: true };
+                return { vardiya: currentVar };
+            }
+            if (dayOfWeek === tatilGunu) pendingChange = true;
+            else if (pendingChange) {
+                currentVar = nextShift[currentVar];
+                pendingChange = false;
+            }
+            cursor.setDate(cursor.getDate() + 1);
+            safety++;
+        }
+        return { error: true };
+    }
+
+    // --- 1. GÜN SORGULA ---
+    function checkSingleDay() {
+        saveSettings();
+        const dateVal = document.getElementById('query_date').value;
+        if(!dateVal) return;
+        const result = getShiftForDate(dateVal);
+        const div = document.getElementById('query-result-area');
+        const d = new Date(dateVal);
+        
+        let html = '';
+        if(result.error) {
+            html = `<div class="alert alert-warning text-center">Referans tarihinden ileri bir tarih seçin.</div>`;
+        } else if(result.tatil) {
+            html = createBigCard(d, "HAFTALIK TATİL", "bi-emoji-sunglasses-fill", "Dinlenme Zamanı", "#7b1fa2", "#f3e5f5");
+        } else {
+            const s = shiftData[result.vardiya];
+            html = createBigCard(d, s.label, s.icon, "", s.color, s.bg);
+        }
+        div.innerHTML = html;
+        div.style.display = 'block';
+    }
+
+    function createBigCard(dateObj, title, icon, subtitle, color, bg) {
+        const gunIsim = gunler[dateObj.getDay()];
+        const tamTarih = dateObj.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+        return `
+        <div class="big-result-card" style="border-top-color: ${color};">
+            <div class="big-date">${tamTarih}</div>
+            <div class="big-dayname">${gunIsim}</div>
+            <div class="big-icon" style="color: ${color};"><i class="bi ${icon}"></i></div>
+            <div class="big-title" style="color: ${color};">${title}</div>
+            ${subtitle ? `<div class="big-time">${subtitle}</div>` : ''}
+        </div>`;
+    }
+
+    // --- 2. TEK AYLIK TAKVİM ---
+    function renderSingleCalendar() {
+        saveSettings();
+        const ayDegeri = document.getElementById('takvim_ay').value;
+        if (!ayDegeri) return;
+        const [yil, ay] = ayDegeri.split('-');
+        
+        const html = buildCalendarHTML(parseInt(yil), parseInt(ay));
+        document.getElementById('single-calendar-container').innerHTML = html;
+    }
+
+    // --- 3. ARALIK TAKVİMİ (ÇOKLU) ---
+    function renderRangeCalendars() {
+        saveSettings();
+        const startStr = document.getElementById('range_start').value;
+        const endStr = document.getElementById('range_end').value;
+        
+        if(!startStr || !endStr) return;
+
+        const startDate = new Date(startStr);
+        const endDate = new Date(endStr);
+        
+        // Başlangıç ayının 1'ine git
+        let currentMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+        const finalMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+        
+        let fullHTML = "";
+        let safety = 0;
+
+        while (currentMonth <= finalMonth && safety < 24) { // Max 24 ay göster
+            fullHTML += buildCalendarHTML(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
+            // Bir sonraki aya geç
+            currentMonth.setMonth(currentMonth.getMonth() + 1);
+            safety++;
+        }
+        
+        document.getElementById('range-calendar-container').innerHTML = fullHTML;
+    }
+
+    // --- ORTAK TAKVİM HTML ÜRETİCİ ---
+    function buildCalendarHTML(year, month) {
+        const monthName = aylar[month - 1];
+        const firstDay = new Date(year, month - 1, 1);
+        const lastDay = new Date(year, month, 0).getDate();
+        
+        let startDay = firstDay.getDay(); 
+        if (startDay === 0) startDay = 7;
+
+        let html = `<div class="calendar-wrapper">
+            <div class="calendar-header">${monthName} ${year}</div>
+            <table class="calendar-table"><thead><tr>
+                <th>Pzt</th><th>Sal</th><th>Çar</th><th>Per</th><th>Cum</th><th>Cmt</th><th>Paz</th>
+            </tr></thead><tbody><tr>`;
+
+        for (let i = 1; i < startDay; i++) html += '<td></td>';
+
+        const todayStr = new Date().toISOString().split('T')[0];
+        
+        for (let day = 1; day <= lastDay; day++) {
+            const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const result = getShiftForDate(dateStr);
+            const isToday = (todayStr === dateStr) ? 'today-border' : '';
+            
+            let content = '';
+            if (!result.error) {
+                if (result.tatil) {
+                    content = `<div class="cal-badge c-tatil">TATİL</div>`;
+                } else {
+                    const s = shiftData[result.vardiya];
+                    content = `<div class="cal-badge ${s.cal}"><i class="bi ${s.icon}"></i>${s.short}</div>`;
+                }
+            }
+
+            html += `<td class="${isToday}"><div class="cal-cell-inner"><span class="day-num">${day}</span>${content}</div></td>`;
+
+            if ((startDay - 1 + day) % 7 === 0) html += '</tr><tr>';
+        }
+        html += '</tr></tbody></table></div>';
+        return html;
+    }
+
+    function exportPDF(elId, name) {
+        const el = document.getElementById(elId);
+        const btn = event.currentTarget;
+        const oldText = btn.innerHTML;
+        btn.innerHTML = 'Hazırlanıyor...';
+        btn.disabled = true;
+
+        const { jsPDF } = window.jspdf;
+        html2canvas(el, { scale: 1.5, useCORS: true }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgW = 190;
+            const imgH = canvas.height * imgW / canvas.width;
+            
+            let hLeft = imgH;
+            let pos = 10;
+            
+            pdf.addImage(imgData, 'PNG', 10, pos, imgW, imgH);
+            hLeft -= 295;
+            while(hLeft >= 0) {
+                pos = hLeft - imgH;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 10, pos, imgW, imgH);
+                hLeft -= 295;
+            }
+            pdf.save(name + '.pdf');
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        });
+    }
+</script>
+</body>
+</html>
