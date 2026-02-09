@@ -111,11 +111,22 @@
         .big-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; }
         .big-time { font-size: 0.9rem; background: #f0f0f0; display: inline-block; padding: 6px 15px; border-radius: 20px; font-weight: 600; color: #555; }
 
+        /* --- MOBİL İÇİN ÖZEL AYARLAR (GÜNCELLENDİ) --- */
         @media (max-width: 576px) {
             .nav-link { font-size: 0.8rem; padding: 8px 10px !important; }
-            .calendar-table td { height: 55px; }
-            .cal-badge { font-size: 0.55rem; }
-            .cal-badge i { display: none; } /* Mobilde ikonları gizle, yer aç */
+            .calendar-table td { height: 60px; } /* Yüksekliği biraz azalttık */
+            .day-num { font-size: 0.8rem; margin-bottom: 2px; }
+            
+            .cal-badge { 
+                font-size: 0.55rem; 
+                flex-direction: column; /* İkon ve yazıyı alt alta diz */
+                padding: 2px 1px;
+                gap: 1px;
+            }
+            .cal-badge i { 
+                display: block !important; /* İKONLARI GÖSTER */
+                font-size: 1rem; /* İkon boyutu */
+            } 
         }
     </style>
 </head>
