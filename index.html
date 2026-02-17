@@ -4,6 +4,8 @@
     <title>Akıllı Vardiya Takvimi</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     
@@ -11,8 +13,7 @@
         :root {
             --primary-bg: #f4f6f9;
             --card-bg: #ffffff;
-            
-            /* Vardiya Renkleri */
+            /* Eski Stil Renkler */
             --v1-color: #2c3e50; --v1-bg: #eceff1;
             --v2-color: #f57f17; --v2-bg: #fff3e0;
             --v3-color: #c62828; --v3-bg: #ffebee;
@@ -36,14 +37,14 @@
             padding: 20px; color: white; text-align: center;
         }
 
-        /* --- MENÜ SEKMELERİ --- */
+        /* --- SEKME TASARIMI --- */
         .nav-pills {
             flex-wrap: nowrap !important;
             overflow-x: auto;
             gap: 5px;
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none;
         }
-        .nav-pills::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+        .nav-pills::-webkit-scrollbar { display: none; }
         
         .nav-link {
             white-space: nowrap;
@@ -60,7 +61,7 @@
             box-shadow: 0 4px 10px rgba(13, 71, 161, 0.3);
         }
 
-        /* --- VARDİYA SEÇİM KUTULARI --- */
+        /* --- SEÇİM KUTULARI --- */
         .shift-selector { display: none; }
         .shift-option {
             border: 2px solid #e0e0e0; border-radius: 12px; padding: 10px;
@@ -76,31 +77,46 @@
         .shift-selector:checked + .shift-option.opt-v2 { border-color: var(--v2-color); background-color: var(--v2-bg); color: var(--v2-color); }
         .shift-selector:checked + .shift-option.opt-v3 { border-color: var(--v3-color); background-color: var(--v3-bg); color: var(--v3-color); }
 
-        /* --- TAKVİM TASARIMI --- */
-        .calendar-wrapper { padding: 15px; background: #fff; border-radius: 12px; border: 1px solid #eee; margin-bottom: 20px; page-break-inside: avoid; }
-        .calendar-header { text-align: center; font-weight: 800; font-size: 1.2rem; margin-bottom: 15px; color: #333; text-transform: uppercase; letter-spacing: 1px; }
+        /* --- TAKVİM KUTULARI --- */
+        .calendar-wrapper { 
+            padding: 10px; background: #fff; border-radius: 8px; border: 1px solid #eee; margin-bottom: 15px; page-break-inside: avoid; 
+        }
+        .calendar-header { text-align: center; font-weight: 800; font-size: 1.1rem; margin-bottom: 10px; color: #333; text-transform: uppercase; letter-spacing: 1px; }
         
-        .calendar-table { width: 100%; border-collapse: separate; border-spacing: 3px; table-layout: fixed; }
-        .calendar-table th { text-align: center; font-size: 0.75rem; color: #888; padding-bottom: 8px; text-transform: uppercase; }
+        .calendar-table { width: 100%; border-collapse: separate; border-spacing: 2px; table-layout: fixed; }
+        .calendar-table th { text-align: center; font-size: 0.7rem; color: #888; padding-bottom: 5px; text-transform: uppercase; }
         .calendar-table td {
-            height: 65px; vertical-align: top; border: 1px solid #f1f1f1; border-radius: 8px; background: #fff;
+            height: 55px; vertical-align: top; border: 1px solid #f1f1f1; border-radius: 6px; background: #fff;
             position: relative;
         }
-        .cal-cell-inner { height: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 4px; }
-        .day-num { font-weight: 700; font-size: 0.9rem; color: #444; }
+        .cal-cell-inner { height: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 2px; }
+        .day-num { font-weight: 700; font-size: 0.85rem; color: #444; }
+        
+        /* Emojili Badge */
         .cal-badge { 
-            font-size: 0.65rem; font-weight: 800; padding: 3px 2px; border-radius: 5px; width: 100%; text-align: center;
-            display: flex; justify-content: center; align-items: center; gap: 3px; line-height: 1.2;
+            font-size: 0.6rem; font-weight: 800; padding: 2px 1px; border-radius: 4px; width: 100%; text-align: center;
+            display: flex; justify-content: center; align-items: center; gap: 3px; line-height: 1.1;
         }
+        .cal-badge i { font-size: 0.7rem; } /* İkon boyutu */
+
         .today-border { border: 2px solid #0d47a1 !important; box-shadow: 0 0 10px rgba(13, 71, 161, 0.1); }
         
-        /* Renk Sınıfları */
         .c-v1 { background: var(--v1-bg); color: var(--v1-color); }
         .c-v2 { background: var(--v2-bg); color: var(--v2-color); }
         .c-v3 { background: var(--v3-bg); color: var(--v3-color); }
         .c-tatil { background: var(--tatil-bg); color: var(--tatil-color); }
 
-        /* --- GÜN SORGULA KARTI --- */
+        /* --- PDF IZGARA --- */
+        #range-calendar-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 Sütun */
+            gap: 15px;
+        }
+        @media (max-width: 768px) {
+            #range-calendar-container { grid-template-columns: 1fr; }
+        }
+
+        /* --- BÜYÜK KART --- */
         .big-result-card {
             background: white; border-radius: 16px; padding: 30px; text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08); border-top: 8px solid #ccc; margin-top: 20px;
@@ -110,23 +126,13 @@
         .big-icon { font-size: 3.5rem; margin-bottom: 15px; }
         .big-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; }
         .big-time { font-size: 0.9rem; background: #f0f0f0; display: inline-block; padding: 6px 15px; border-radius: 20px; font-weight: 600; color: #555; }
-
-        /* --- MOBİL İÇİN ÖZEL AYARLAR (GÜNCELLENDİ) --- */
+        
         @media (max-width: 576px) {
             .nav-link { font-size: 0.8rem; padding: 8px 10px !important; }
-            .calendar-table td { height: 60px; } /* Yüksekliği biraz azalttık */
+            .calendar-table td { height: 50px; }
             .day-num { font-size: 0.8rem; margin-bottom: 2px; }
-            
-            .cal-badge { 
-                font-size: 0.55rem; 
-                flex-direction: column; /* İkon ve yazıyı alt alta diz */
-                padding: 2px 1px;
-                gap: 1px;
-            }
-            .cal-badge i { 
-                display: block !important; /* İKONLARI GÖSTER */
-                font-size: 1rem; /* İkon boyutu */
-            } 
+            .cal-badge { font-size: 0.55rem; flex-direction: column; padding: 1px; gap: 0; }
+            .cal-badge i { display: block !important; font-size: 0.8rem; margin-bottom: 1px; } 
         }
     </style>
 </head>
@@ -221,13 +227,22 @@
                                 <button class="btn btn-primary px-4" onclick="renderSingleCalendar()"><i class="bi bi-arrow-clockwise"></i></button>
                             </div>
                             
-                            <div id="export-single-calendar-area">
+                            <div id="export-single-calendar-area" class="p-2 bg-white rounded">
                                 <div id="single-calendar-container"></div>
                             </div>
 
-                            <button class="btn btn-dark w-100 mt-3 py-2" onclick="exportPDF('export-single-calendar-area', 'Aylik_Takvim')">
-                                <i class="bi bi-file-earmark-pdf-fill me-2"></i>PDF Olarak İndir
-                            </button>
+                            <div class="row g-2 mt-3">
+                                <div class="col-6">
+                                    <button class="btn btn-dark w-100 py-2" onclick="exportPDF('export-single-calendar-area', 'Aylik_Takvim')">
+                                        <i class="bi bi-file-earmark-pdf-fill me-2"></i>PDF İndir
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-success w-100 py-2" onclick="exportImage('export-single-calendar-area', 'Aylik_Takvim')">
+                                        <i class="bi bi-file-image me-2"></i>Resim (PNG)
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="tab-pane fade" id="pills-range">
@@ -245,13 +260,22 @@
                                 </div>
                             </div>
 
-                            <div id="export-range-area" class="bg-white p-1">
+                            <div id="export-range-area" class="bg-white p-2">
                                 <div id="range-calendar-container"></div>
                             </div>
 
-                            <button class="btn btn-dark w-100 mt-3 py-2" onclick="exportPDF('export-range-area', 'Yillik_Takvim')">
-                                <i class="bi bi-file-earmark-pdf-fill me-2"></i>PDF Olarak İndir
-                            </button>
+                            <div class="row g-2 mt-3">
+                                <div class="col-6">
+                                    <button class="btn btn-dark w-100 py-2" onclick="exportPDF('export-range-area', 'Yillik_Takvim')">
+                                        <i class="bi bi-file-earmark-pdf-fill me-2"></i>PDF (A4)
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-success w-100 py-2" onclick="exportImage('export-range-area', 'Yillik_Takvim')">
+                                        <i class="bi bi-file-image me-2"></i>Resim (PNG)
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -269,7 +293,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-    // --- VERİLER ---
+    // --- VERİLER VE EMOJİLER ---
     const gunler = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
     const aylar = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
 
@@ -279,20 +303,23 @@
         3: { icon: "bi-lock-fill", label: "Kilit Vardiyası", time: "16:00 - 24:00", short: "Kilit", color: "#c62828", bg: "#ffebee", cal: "c-v3" }
     };
 
-    // --- BAŞLANGIÇ AYARLARI ---
+    // --- AÇILIŞ AYARLARI ---
     window.onload = function() {
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date();
+        const todayStr = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
         
-        // Inputlara bugünün tarihini ata
-        document.getElementById('baslangic_tarihi').value = today;
-        document.getElementById('query_date').value = today;
-        document.getElementById('takvim_ay').value = today.slice(0, 7);
-        document.getElementById('range_start').value = today;
+        if(!localStorage.getItem('my_baslangic')) {
+            document.getElementById('baslangic_tarihi').value = todayStr;
+        }
         
-        // Çoklu seçim bitiş tarihi (2 ay sonrası)
+        document.getElementById('query_date').value = todayStr;
+        document.getElementById('takvim_ay').value = todayStr.slice(0, 7);
+        document.getElementById('range_start').value = todayStr;
+        
         const nextMonth = new Date();
-        nextMonth.setMonth(nextMonth.getMonth() + 2);
-        document.getElementById('range_end').value = nextMonth.toISOString().split('T')[0];
+        nextMonth.setMonth(nextMonth.getMonth() + 11); // 1 Yıllık varsayılan
+        const nextMonthStr = new Date(nextMonth.getTime() - (nextMonth.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+        document.getElementById('range_end').value = nextMonthStr;
 
         loadSettings();
     };
@@ -312,58 +339,52 @@
         localStorage.setItem('my_baslangic', document.getElementById('baslangic_tarihi').value);
     }
 
-    // --- HESAPLAMA MOTORU (DÜZELTİLDİ) ---
+    // --- DÜZELTİLMİŞ ALGORİTMA ---
     function getShiftForDate(targetDateStr) {
         const baslangicStr = document.getElementById('baslangic_tarihi').value;
-        if(!baslangicStr) return { error: true };
-
-        const baslangicTarihi = new Date(baslangicStr);
         const baslangicVardiya = parseInt(document.querySelector('input[name="startVardiya"]:checked').value);
         const tatilGunu = parseInt(document.getElementById('tatil_gunu').value);
-        const hedefTarih = new Date(targetDateStr);
-
-        // Saat farklarını yok saymak için saati sabitle
-        baslangicTarihi.setHours(12,0,0,0);
-        hedefTarih.setHours(12,0,0,0);
-
-        if (hedefTarih < baslangicTarihi) return { error: true, msg: "Başlangıçtan önceki tarih" };
-
-        const nextShift = { 1: 3, 2: 1, 3: 2 }; // V1 -> V3 -> V2 döngüsü
-        let currentVar = baslangicVardiya;
-        let pendingChange = false;
         
-        let cursor = new Date(baslangicTarihi);
-        let safety = 0;
-        
-        while (cursor <= hedefTarih && safety < 10000) {
-            const dayOfWeek = cursor.getDay();
-            
-            // ÖNCE DEĞİŞİKLİK KONTROLÜ (DÜZELTME BURADA YAPILDI)
-            // Eğer dün tatildi ise (pendingChange=true) ve bugün tatil değilse,
-            // bugünün vardiyasını hesaplamadan ÖNCE değiştir.
-            if (pendingChange && dayOfWeek !== tatilGunu) {
-                currentVar = nextShift[currentVar];
-                pendingChange = false;
-            }
+        if(!baslangicStr || !targetDateStr) return { error: true };
 
-            // SONRA HEDEF KONTROLÜ
-            if (cursor.getTime() === hedefTarih.getTime()) {
-                if (dayOfWeek === tatilGunu) return { tatil: true };
-                return { vardiya: currentVar };
-            }
-            
-            // Eğer bugün tatilse, sonraki iş günü için değişim bayrağını kaldır
-            if (dayOfWeek === tatilGunu) {
-                pendingChange = true;
-            }
-            
-            cursor.setDate(cursor.getDate() + 1);
-            safety++;
-        }
-        return { error: true };
+        const refDate = new Date(baslangicStr);
+        const targetDate = new Date(targetDateStr);
+
+        // 1. GÜN TATİL Mİ?
+        if (targetDate.getDay() === tatilGunu) return { tatil: true };
+
+        // 2. HAFTA HESABI (Hafta başlangıcı = Tatil Gününden Sonraki Gün)
+        const weekStartDay = (tatilGunu + 1) % 7;
+        
+        // Tarihleri hafta başına hizala
+        const alignDate = (d) => {
+            const temp = new Date(d);
+            temp.setHours(0,0,0,0);
+            const day = temp.getDay();
+            let diff = (day - weekStartDay + 7) % 7;
+            temp.setDate(temp.getDate() - diff);
+            return temp;
+        };
+
+        const refWeekStart = alignDate(refDate);
+        const targetWeekStart = alignDate(targetDate);
+        
+        // Hafta farkı (Math.round ile saat farklarını yut)
+        const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+        const weekDiff = Math.round((targetWeekStart - refWeekStart) / msPerWeek);
+
+        // 3. VARDİYA DÖNGÜSÜ: [V1, V3, V2] (Sıra: 1 -> 3 -> 2 -> 1)
+        const pattern = [1, 3, 2];
+        const startIdx = pattern.indexOf(baslangicVardiya);
+        
+        // Modüler Aritmetik (Negatif sayıları destekler)
+        let targetIdx = ((startIdx + weekDiff) % 3 + 3) % 3;
+        
+        return { vardiya: pattern[targetIdx] };
     }
 
-    // --- 1. GÜN SORGULA ---
+    // --- GÖRÜNTÜLEME FONKSİYONLARI ---
+
     function checkSingleDay() {
         saveSettings();
         const dateVal = document.getElementById('query_date').value;
@@ -375,7 +396,7 @@
         
         let html = '';
         if(result.error) {
-            html = `<div class="alert alert-warning text-center mt-3"><i class="bi bi-exclamation-triangle me-2"></i>Lütfen "Başlangıç Tarihi"nden sonraki bir tarihi seçin.</div>`;
+            html = `<div class="alert alert-warning text-center mt-3">Tarih seçimi hatalı.</div>`;
         } else if(result.tatil) {
             html = createBigCard(d, "HAFTALIK TATİL", "bi-emoji-sunglasses-fill", "Dinlenme Zamanı", "#7b1fa2", "#f3e5f5");
         } else {
@@ -400,18 +421,15 @@
         </div>`;
     }
 
-    // --- 2. TEK AYLIK TAKVİM ---
     function renderSingleCalendar() {
         saveSettings();
         const ayDegeri = document.getElementById('takvim_ay').value;
         if (!ayDegeri) return;
-        
         const [yil, ay] = ayDegeri.split('-');
         const html = buildCalendarHTML(parseInt(yil), parseInt(ay));
         document.getElementById('single-calendar-container').innerHTML = html;
     }
 
-    // --- 3. ÇOKLU TAKVİM ---
     function renderRangeCalendars() {
         saveSettings();
         const startStr = document.getElementById('range_start').value;
@@ -422,41 +440,34 @@
         const startDate = new Date(startStr);
         const endDate = new Date(endStr);
         
-        // Başlangıç ayının 1'ine git
         let currentMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
         const finalMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
         
         let fullHTML = "";
         let safety = 0;
 
-        while (currentMonth <= finalMonth && safety < 36) { // Max 3 yıl
+        while (currentMonth <= finalMonth && safety < 36) { 
             fullHTML += buildCalendarHTML(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
             currentMonth.setMonth(currentMonth.getMonth() + 1);
             safety++;
         }
-        
         document.getElementById('range-calendar-container').innerHTML = fullHTML;
     }
 
-    // --- ORTAK HTML OLUŞTURUCU ---
     function buildCalendarHTML(year, month) {
         const monthName = aylar[month - 1];
         const firstDayDate = new Date(year, month - 1, 1);
         const lastDay = new Date(year, month, 0).getDate();
         
-        // Haftanın başlangıcı (Pazartesi=1 yapmak için)
         let startDay = firstDayDate.getDay(); 
-        if (startDay === 0) startDay = 7; // Pazar'ı 7 yap
+        if (startDay === 0) startDay = 7; 
 
         let html = `<div class="calendar-wrapper">
             <div class="calendar-header">${monthName} ${year}</div>
             <table class="calendar-table">
-                <thead>
-                    <tr><th>Pzt</th><th>Sal</th><th>Çar</th><th>Per</th><th>Cum</th><th>Cmt</th><th>Paz</th></tr>
-                </thead>
+                <thead><tr><th>Pzt</th><th>Sal</th><th>Çar</th><th>Per</th><th>Cum</th><th>Cmt</th><th>Paz</th></tr></thead>
                 <tbody><tr>`;
 
-        // Boş günleri doldur
         for (let i = 1; i < startDay; i++) {
             html += '<td style="background:#f9f9f9; border:none;"></td>';
         }
@@ -471,10 +482,10 @@
             let content = '';
             if (!result.error) {
                 if (result.tatil) {
-                    content = `<div class="cal-badge c-tatil">TATİL</div>`;
+                    content = `<div class="cal-badge c-tatil"><i class="bi bi-emoji-sunglasses-fill"></i> TATİL</div>`;
                 } else {
                     const s = shiftData[result.vardiya];
-                    content = `<div class="cal-badge ${s.cal}"><i class="bi ${s.icon}"></i>${s.short}</div>`;
+                    content = `<div class="cal-badge ${s.cal}"><i class="bi ${s.icon}"></i> ${s.short}</div>`;
                 }
             }
 
@@ -485,69 +496,68 @@
                 </div>
             </td>`;
 
-            // Satır sonu kontrolü (Pazar günü ise satırı kapat ve yenisini aç, ancak son gün değilse)
             if ((startDay - 1 + day) % 7 === 0 && day !== lastDay) {
                 html += '</tr><tr>';
             }
         }
-        
         html += '</tr></tbody></table></div>';
         return html;
     }
 
-    // --- PDF ÇIKTISI ALMA ---
+    // --- İNDİRME İŞLEMLERİ ---
+    function exportImage(elementId, fileName) {
+        const element = document.getElementById(elementId);
+        const btn = event.currentTarget;
+        const oldText = btn.innerHTML;
+        
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>';
+        btn.disabled = true;
+        window.scrollTo(0,0);
+
+        html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = fileName + '_' + new Date().toISOString().slice(0,10) + '.png';
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+            btn.innerHTML = oldText;
+            btn.disabled = false;
+        });
+    }
+
     function exportPDF(elementId, fileName) {
         const element = document.getElementById(elementId);
         const btn = event.currentTarget;
         const oldText = btn.innerHTML;
         
-        // Butonu geçici olarak devre dışı bırak
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Hazırlanıyor...';
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>';
         btn.disabled = true;
-
-        // Sayfa kaydırmayı en üste al (render hatası olmaması için)
         window.scrollTo(0,0);
 
         const { jsPDF } = window.jspdf;
 
-        html2canvas(element, {
-            scale: 2, // Yüksek çözünürlük
-            useCORS: true,
-            logging: false,
-            backgroundColor: "#ffffff"
-        }).then(canvas => {
+        html2canvas(element, { scale: 2, useCORS: true, logging: false, backgroundColor: "#ffffff" }).then(canvas => {
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
-            const pdfWidth = 210;
-            const pdfHeight = 297;
-            const margin = 10;
-            const imgWidth = pdfWidth - (margin * 2);
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            const pdfW = 210;
+            const pdfH = 297;
+            const m = 10;
+            const w = pdfW - 2*m;
+            const h = (canvas.height * w) / canvas.width;
             
-            let heightLeft = imgHeight;
-            let position = margin;
-            let pageHeight = pdfHeight - (margin * 2);
+            let heightLeft = h;
+            let position = m;
 
-            // İlk sayfa
-            pdf.addImage(imgData, 'JPEG', margin, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
+            pdf.addImage(imgData, 'JPEG', m, position, w, h);
+            heightLeft -= (pdfH - 2*m);
 
-            // Eğer içerik tek sayfaya sığmıyorsa yeni sayfalar ekle
             while (heightLeft > 0) {
-                position = heightLeft - imgHeight + margin; // Pozisyon ayarlaması
+                position = heightLeft - h + m;
                 pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', margin, - (imgHeight - heightLeft) - margin , imgWidth, imgHeight); // Kaydırma mantığı
-                heightLeft -= pageHeight;
+                pdf.addImage(imgData, 'JPEG', m, -(h - heightLeft) - m, w, h);
+                heightLeft -= (pdfH - 2*m);
             }
 
-            pdf.save(fileName + '_' + new Date().toISOString().slice(0,10) + '.pdf');
-            
-            // Butonu eski haline getir
-            btn.innerHTML = oldText;
-            btn.disabled = false;
-        }).catch(err => {
-            console.error(err);
-            alert("PDF oluşturulurken bir hata oluştu.");
+            pdf.save(fileName + '.pdf');
             btn.innerHTML = oldText;
             btn.disabled = false;
         });
